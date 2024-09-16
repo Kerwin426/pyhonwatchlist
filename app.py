@@ -34,6 +34,14 @@ def index():
 def page_not_found(e):
     return render_template('404.html'), 404
 
+@app.errorhandler(400)
+def page_not_found(e):
+    return render_template('400.html'), 400
+
+@app.errorhandler(500)
+def page_not_found(e):
+    return render_template('500.html'), 500
+
 @app.cli.command()
 @click.option('--drop',is_flag=True,help='Create after drop.')
 def initdb(drop):
