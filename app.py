@@ -18,12 +18,21 @@ db = SQLAlchemy(app)# 初始化扩展，传入创建的 Flask 实例app
 
 
 
-# 注册一个处理函数，当访问根路径时，返回 "Welcome to my app!"
+# context_processor 装饰的函数返回的变量将会统一注入到每一个模板的上下文中，因此我们可以在模板中直接使用 user 变量
+@app.context_processor
+def inject_user():
+    user = User.query.first()
+    return dict(user=user)
+
 @app.route('/')
 def index():
-    user = User.query.first()
     movies = Movie.query.all()
-    return render_template('index.html', user=user, movies=movies)
+    return render_template('index.html',  movies=movies)
+
+# 返回渲染好的错误模板
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
 
 @app.cli.command()
 @click.option('--drop',is_flag=True,help='Create after drop.')
