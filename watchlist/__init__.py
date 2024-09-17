@@ -5,21 +5,17 @@ import sys
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from flask_bootstrap import Bootstrap
+from flask_moment import Moment
 
-# SQLite URI compatible
-WIN = sys.platform.startswith('win')
-if WIN:
-    prefix = 'sqlite:///'
-else:
-    prefix = 'sqlite:////'
+app = Flask('watchlist')
+app.config.from_pyfile('settings.py')
+app.jinja_env.trim_blocks = True
+app.jinja_env.lstrip_blocks = True
 
-app = Flask(__name__)
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev')
-app.config['SQLALCHEMY_DATABASE_URI'] = prefix + os.path.join(os.path.dirname(app.root_path), os.getenv('DATABASE_FILE', 'data.db'))
-# app.config['SQLALCHEMY_DATABASE_URI'] = prefix + os.path.join(os.path.dirname(app.root_path), 'data.db')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # 关闭对模型修改的监控
-# app.config['SECRET_KEY'] = 'dev'  # 等同于 app.secret_key = 'dev'
 db = SQLAlchemy(app)# 初始化扩展，传入创建的 Flask 实例app
+bootstrap = Bootstrap(app)
+moment = Moment(app)
 login_manager = LoginManager(app)
 
 

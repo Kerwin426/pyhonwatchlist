@@ -1,7 +1,7 @@
 import click
 
 from watchlist import app, db
-from watchlist.models import User, Movie
+from watchlist.models import User, Movie,Message
 
 
 @app.cli.command()
@@ -10,13 +10,19 @@ def initdb(drop):
     """Initialize the database."""
     if drop:
         db.drop_all()
+        click.echo('Drop tables.')
     db.create_all()
     click.echo('Initialized database.')
 
 @app.cli.command()
-def forge():
+@click.option('--count', default=20, help='Quantity of messages, default is 20.')
+def forge(count):
     """Generate fake data."""
+    from faker import Faker
+    db.drop_all()
     db.create_all()
+    faker = Faker()
+    click.echo('Working...')
 
     # 全局的两个变量移动到这个函数内
     name = 'Kerwin Gu'
@@ -39,8 +45,16 @@ def forge():
         movie = Movie(title=m['title'], year=m['year'])
         db.session.add(movie)
 
+    for i in range(count):
+        message = Message(
+            name=faker.name(),
+            body=faker.sentence(),
+            timestamp=faker.date_time_this_year()
+        )
+        db.session.add(message)
+
     db.session.commit()
-    click.echo('Done.')
+    click.echo('Fake messages done.')
 
 
 @app.cli.command()
